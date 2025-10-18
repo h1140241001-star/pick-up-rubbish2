@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SDGs性別平權 - 情境題</title>
+<title>SDGs性別平權 - 情境題（第二關）</title>
 <style>
   body {
     margin: 0;
@@ -34,7 +34,7 @@
     border-radius: 8px;
   }
 
-  /* --- 大型可愛摩天輪背景 --- */
+  /* 摩天輪背景 */
   .ferris-bg {
     position: absolute;
     bottom: 0;
@@ -89,7 +89,7 @@
     border-radius: 10px;
   }
 
-  /* --- 小花朵 --- */
+  /* 花朵 */
   .flower {
     position: absolute;
     width: 60px;
@@ -101,21 +101,13 @@
     transition: transform 0.2s;
   }
 
-  .flower:hover {
-    transform: scale(1.15);
-  }
+  .flower:hover { transform: scale(1.15); }
 
-  .flower1 {
-    background: radial-gradient(circle, #ffb3d9 40%, #ff4081 90%);
-  }
-  .flower2 {
-    background: radial-gradient(circle, #fff176 40%, #fdd835 90%);
-  }
-  .flower3 {
-    background: radial-gradient(circle, #b39ddb 40%, #7e57c2 90%);
-  }
+  .flower1 { background: radial-gradient(circle, #ffb3d9 40%, #ff4081 90%); }
+  .flower2 { background: radial-gradient(circle, #fff176 40%, #fdd835 90%); }
+  .flower3 { background: radial-gradient(circle, #b39ddb 40%, #7e57c2 90%); }
 
-  /* --- 題目區 --- */
+  /* 題目區 */
   .question-panel {
     display: none;
     position: fixed;
@@ -152,9 +144,7 @@
     padding: 10px;
   }
 
-  .drop-zone h3 {
-    margin-top: 0;
-  }
+  .drop-zone.wrong { border-color: red; }
 
   #resultBox {
     display: none;
@@ -181,32 +171,24 @@
     cursor: pointer;
   }
 
-  button:hover {
-    background-color: #45a049;
-  }
+  button:hover { background-color: #45a049; }
+
 </style>
 </head>
 <body>
-  <header>SDGs性別平權 - 情境題</header>
+  <header>SDGs性別平權 - 情境題（第二關）</header>
   <div id="scoreBoard">答對題數：0 / 6</div>
 
-  <!-- 摩天輪背景 -->
   <div class="ferris-bg">
     <div class="wheel">
-      <div class="cab"></div>
-      <div class="cab"></div>
-      <div class="cab"></div>
-      <div class="cab"></div>
-      <div class="cab"></div>
-      <div class="cab"></div>
+      <div class="cab"></div><div class="cab"></div><div class="cab"></div>
+      <div class="cab"></div><div class="cab"></div><div class="cab"></div>
     </div>
     <div class="base"></div>
   </div>
 
-  <!-- 花朵 -->
   <div id="flowersContainer"></div>
 
-  <!-- 題目彈窗 -->
   <div id="questionPanel" class="question-panel">
     <h2 id="questionTitle"></h2>
     <p>請將下列行為拖曳到正確的區域：</p>
@@ -222,11 +204,10 @@
     <button onclick="submitAnswers()">確認答案</button>
   </div>
 
-  <!-- 結果畫面 -->
   <div id="resultBox">
     <h2 id="resultText"></h2>
     <button id="retryBtn" onclick="location.reload()">再次挑戰</button>
-    <button id="certificateBtn" onclick="window.location.href='certificate.html'">下載學習證書</button>
+    <button id="certificateBtn" onclick="goToCertificate()">下載學習證書</button>
   </div>
 
 <script>
@@ -260,6 +241,7 @@ const questionSets = [
 let score = 0;
 let current = null;
 let answered = 0;
+let usedFlowers = 0;
 
 function randomPosition() {
   const flowersContainer = document.getElementById("flowersContainer");
@@ -269,7 +251,12 @@ function randomPosition() {
     flower.className = "flower " + flowerStyles[i % 3];
     flower.style.left = Math.random() * 80 + 10 + "%";
     flower.style.top = Math.random() * 25 + 65 + "%";
-    flower.onclick = () => openQuestion();
+    flower.onclick = () => {
+      if (usedFlowers < questionSets.length) {
+        openQuestion();
+        usedFlowers++;
+      }
+    };
     flowersContainer.appendChild(flower);
   }
 }
@@ -295,30 +282,45 @@ function openQuestion() {
 
 function allowDrop(ev) { ev.preventDefault(); }
 function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+
 function drop(ev, zoneType) {
   ev.preventDefault();
   const data = ev.dataTransfer.getData("text");
   const el = document.getElementById(data);
-  ev.target.appendChild(el);
-  el.dataset.dropped = zoneType;
+  if (el) {
+    ev.target.appendChild(el);
+    el.dataset.dropped = zoneType;
+  }
 }
 
 function submitAnswers() {
+  const eqZone = document.getElementById("equalZone");
+  const unEqZone = document.getElementById("unequalZone");
+  eqZone.classList.remove("wrong");
+  unEqZone.classList.remove("wrong");
+
   let correct = 0;
   current.items.forEach((item, i) => {
     const el = document.getElementById("drag" + i);
     if (el.dataset.dropped === item.type) correct++;
   });
+
   if (correct === current.items.length) {
     alert("全部正確！");
     score++;
   } else {
     alert("有些放錯囉！");
+    if (correct === 0) {
+      eqZone.classList.add("wrong");
+      unEqZone.classList.add("wrong");
+    }
   }
+
   answered++;
   document.getElementById("scoreBoard").innerText = `答對題數：${score} / 6`;
   document.getElementById("questionPanel").style.display = "none";
-  if (answered >= 6) showResult();
+
+  if (answered >= 6) setTimeout(showResult, 400);
 }
 
 function showResult() {
@@ -341,6 +343,11 @@ function showResult() {
     retry.style.display = "none";
     cert.style.display = "inline-block";
   }
+}
+
+/* ✅ 修正導向第三關 */
+function goToCertificate() {
+  window.location.href = "level3.html";
 }
 
 window.onload = randomPosition;
