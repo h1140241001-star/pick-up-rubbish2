@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDGs性別平權 - 情境題</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    font-family: "Microsoft JhengHei", sans-serif;
+    background: linear-gradient(#b3e5fc 60%, #a5d6a7 40%);
+    height: 100vh;
+    position: relative;
+  }
+
+  header {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    font-size: 26px;
+    font-weight: bold;
+    color: #222;
+  }
+
+  #scoreBoard {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    font-size: 20px;
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+
+  /* --- 大型可愛摩天輪背景 --- */
+  .ferris-bg {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 480px;
+    height: 480px;
+  }
+
+  .wheel {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 380px;
+    height: 380px;
+    border: 10px solid #ff80ab;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 10%, transparent 11%);
+    background-size: 24px 24px;
+    animation: spin 25s linear infinite;
+  }
+
+  @keyframes spin {
+    from {transform: translateX(-50%) rotate(0deg);}
+    to {transform: translateX(-50%) rotate(360deg);}
+  }
+
+  .cab {
+    position: absolute;
+    width: 60px;
+    height: 40px;
+    border-radius: 8px;
+    border: 3px solid #b46a1f;
+  }
+  .cab:nth-child(1) { top: 10px; left: 160px; background: #ffd54f; }
+  .cab:nth-child(2) { top: 120px; right: -20px; background: #90caf9; }
+  .cab:nth-child(3) { bottom: 120px; right: -20px; background: #a5d6a7; }
+  .cab:nth-child(4) { bottom: 10px; left: 160px; background: #ffab91; }
+  .cab:nth-child(5) { bottom: 120px; left: -20px; background: #ce93d8; }
+  .cab:nth-child(6) { top: 120px; left: -20px; background: #fff59d; }
+
+  .base {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 60px;
+    background: #ffb74d;
+    border: 4px solid #b46a1f;
+    border-radius: 10px;
+  }
+
+  /* --- 小花朵 --- */
+  .flower {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    transition: transform 0.2s;
+  }
+
+  .flower:hover {
+    transform: scale(1.15);
+  }
+
+  .flower1 {
+    background: radial-gradient(circle, #ffb3d9 40%, #ff4081 90%);
+  }
+  .flower2 {
+    background: radial-gradient(circle, #fff176 40%, #fdd835 90%);
+  }
+  .flower3 {
+    background: radial-gradient(circle, #b39ddb 40%, #7e57c2 90%);
+  }
+
+  /* --- 題目區 --- */
+  .question-panel {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 700px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    z-index: 10;
+  }
+
+  .drag-item {
+    display: inline-block;
+    background: #fff59d;
+    padding: 10px 14px;
+    margin: 10px;
+    border-radius: 8px;
+    cursor: grab;
+  }
+
+  .drop-zone {
+    display: inline-block;
+    width: 45%;
+    min-height: 150px;
+    background: #f0f0f0;
+    border: 2px dashed #999;
+    border-radius: 8px;
+    vertical-align: top;
+    margin: 10px;
+    padding: 10px;
+  }
+
+  .drop-zone h3 {
+    margin-top: 0;
+  }
+
+  #resultBox {
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255,255,255,0.97);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    z-index: 20;
+    width: 80%;
+    max-width: 400px;
+  }
+
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+<body>
+  <header>SDGs性別平權 - 情境題</header>
+  <div id="scoreBoard">答對題數：0 / 6</div>
+
+  <!-- 摩天輪背景 -->
+  <div class="ferris-bg">
+    <div class="wheel">
+      <div class="cab"></div>
+      <div class="cab"></div>
+      <div class="cab"></div>
+      <div class="cab"></div>
+      <div class="cab"></div>
+      <div class="cab"></div>
+    </div>
+    <div class="base"></div>
+  </div>
+
+  <!-- 花朵 -->
+  <div id="flowersContainer"></div>
+
+  <!-- 題目彈窗 -->
+  <div id="questionPanel" class="question-panel">
+    <h2 id="questionTitle"></h2>
+    <p>請將下列行為拖曳到正確的區域：</p>
+    <div id="dragItems"></div>
+    <div>
+      <div class="drop-zone" id="equalZone" ondragover="allowDrop(event)" ondrop="drop(event, 'equal')">
+        <h3>性別平等</h3>
+      </div>
+      <div class="drop-zone" id="unequalZone" ondragover="allowDrop(event)" ondrop="drop(event, 'unequal')">
+        <h3>性別不平等</h3>
+      </div>
+    </div>
+    <button onclick="submitAnswers()">確認答案</button>
+  </div>
+
+  <!-- 結果畫面 -->
+  <div id="resultBox">
+    <h2 id="resultText"></h2>
+    <button id="retryBtn" onclick="location.reload()">再次挑戰</button>
+    <button id="certificateBtn" onclick="window.location.href='certificate.html'">下載學習證書</button>
+  </div>
+
+<script>
+const questionSets = [
+  { title: "學校中的平權", items: [
+      { text: "男生女生都可參加足球隊", type: "equal" },
+      { text: "只讓男生當隊長", type: "unequal" }
+    ]},
+  { title: "職場上的機會", items: [
+      { text: "公司依能力升遷", type: "equal" },
+      { text: "認為女性不適合當主管", type: "unequal" }
+    ]},
+  { title: "家庭責任", items: [
+      { text: "家事由家人共同分擔", type: "equal" },
+      { text: "媽媽應該做所有家事", type: "unequal" }
+    ]},
+  { title: "教育資源", items: [
+      { text: "男女都能接受教育", type: "equal" },
+      { text: "只讓男孩上學", type: "unequal" }
+    ]},
+  { title: "社會文化", items: [
+      { text: "尊重各種性別表達", type: "equal" },
+      { text: "嘲笑男生愛打扮", type: "unequal" }
+    ]},
+  { title: "媒體與形象", items: [
+      { text: "廣告呈現多元角色", type: "equal" },
+      { text: "女性只被描繪為家庭主婦", type: "unequal" }
+    ]}
+];
+
+let score = 0;
+let current = null;
+let answered = 0;
+
+function randomPosition() {
+  const flowersContainer = document.getElementById("flowersContainer");
+  const flowerStyles = ["flower1", "flower2", "flower3"];
+  for (let i = 0; i < 3; i++) {
+    const flower = document.createElement("div");
+    flower.className = "flower " + flowerStyles[i % 3];
+    flower.style.left = Math.random() * 80 + 10 + "%";
+    flower.style.top = Math.random() * 25 + 65 + "%";
+    flower.onclick = () => openQuestion();
+    flowersContainer.appendChild(flower);
+  }
+}
+
+function openQuestion() {
+  if (answered >= questionSets.length) return;
+  current = questionSets[answered];
+  document.getElementById("questionPanel").style.display = "block";
+  document.getElementById("questionTitle").innerText = current.title;
+  const dragContainer = document.getElementById("dragItems");
+  dragContainer.innerHTML = "";
+  current.items.forEach((item, i) => {
+    const el = document.createElement("div");
+    el.className = "drag-item";
+    el.innerText = item.text;
+    el.draggable = true;
+    el.id = "drag" + i;
+    el.dataset.type = item.type;
+    el.ondragstart = drag;
+    dragContainer.appendChild(el);
+  });
+}
+
+function allowDrop(ev) { ev.preventDefault(); }
+function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+function drop(ev, zoneType) {
+  ev.preventDefault();
+  const data = ev.dataTransfer.getData("text");
+  const el = document.getElementById(data);
+  ev.target.appendChild(el);
+  el.dataset.dropped = zoneType;
+}
+
+function submitAnswers() {
+  let correct = 0;
+  current.items.forEach((item, i) => {
+    const el = document.getElementById("drag" + i);
+    if (el.dataset.dropped === item.type) correct++;
+  });
+  if (correct === current.items.length) {
+    alert("全部正確！");
+    score++;
+  } else {
+    alert("有些放錯囉！");
+  }
+  answered++;
+  document.getElementById("scoreBoard").innerText = `答對題數：${score} / 6`;
+  document.getElementById("questionPanel").style.display = "none";
+  if (answered >= 6) showResult();
+}
+
+function showResult() {
+  const box = document.getElementById("resultBox");
+  const text = document.getElementById("resultText");
+  const retry = document.getElementById("retryBtn");
+  const cert = document.getElementById("certificateBtn");
+
+  box.style.display = "block";
+  if (score <= 2) {
+    text.innerText = `你的等級是：再加油！`;
+    retry.style.display = "inline-block";
+    cert.style.display = "none";
+  } else if (score <= 4) {
+    text.innerText = `你的等級是：進步中！`;
+    retry.style.display = "inline-block";
+    cert.style.display = "none";
+  } else {
+    text.innerText = `你的等級是：平權達人！`;
+    retry.style.display = "none";
+    cert.style.display = "inline-block";
+  }
+}
+
+window.onload = randomPosition;
+</script>
+</body>
+</html>

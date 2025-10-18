@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDGs性別平權</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(#b7e0ff 40%, #87c06d 40%); /* 藍天綠地背景 */
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    header {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #scoreBoard {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      font-size: 20px;
+      color: #fff;
+      background: rgba(0,0,0,0.6);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    /* 用 CSS 畫茅草屋 */
+    .house {
+      position: absolute;
+      width: 80px;
+      height: 60px;
+      background: #c2a47b;
+      border: 2px solid #654321;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .house::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: -10px;
+      width: 100px;
+      height: 40px;
+      background: #a37947;
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      border: 2px solid #654321;
+    }
+
+    .house:hover {
+      transform: scale(1.1);
+    }
+
+    /* 題目彈窗 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      margin-top: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #endMessage {
+      display: none;
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.95);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      z-index: 20;
+      width: 80%;
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>SDGs性別平權</header>
+  <div id="scoreBoard">答對題數：0 / 10</div>
+
+  <!-- 十個茅草屋 -->
+  <div class="house" style="top:60%; left:10%;" onclick="askQuestion(0)"></div>
+  <div class="house" style="top:55%; left:25%;" onclick="askQuestion(1)"></div>
+  <div class="house" style="top:65%; left:40%;" onclick="askQuestion(2)"></div>
+  <div class="house" style="top:45%; left:55%;" onclick="askQuestion(3)"></div>
+  <div class="house" style="top:70%; left:70%;" onclick="askQuestion(4)"></div>
+  <div class="house" style="top:50%; left:15%;" onclick="askQuestion(5)"></div>
+  <div class="house" style="top:40%; left:35%;" onclick="askQuestion(6)"></div>
+  <div class="house" style="top:65%; left:55%;" onclick="askQuestion(7)"></div>
+  <div class="house" style="top:50%; left:75%;" onclick="askQuestion(8)"></div>
+  <div class="house" style="top:60%; left:85%;" onclick="askQuestion(9)"></div>
+
+  <!-- 題目彈窗 -->
+  <div class="modal" id="questionModal">
+    <div class="modal-content">
+      <h3 id="questionText"></h3>
+      <div id="options"></div>
+    </div>
+  </div>
+
+  <!-- 結束畫面 -->
+  <div id="endMessage">
+    <h2 id="endTitle"></h2>
+    <button id="retryBtn" onclick="location.reload()">重新挑戰</button>
+    <button id="nextBtn" onclick="window.location.href='level2.html'">前往下一關</button>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "男女應享有平等的教育與就業機會，這屬於哪一項SDGs目標？", options: ["性別平權", "零飢餓", "潔淨水資源"], correct: 0 },
+      { q: "「同工同酬」是指？", options: ["女性應少領薪水", "做相同工作應領相同薪資", "男性工作比較重要"], correct: 1 },
+      { q: "以下何者是性別刻板印象？", options: ["女生不適合當工程師", "每個人都能選自己喜歡的職業", "男女皆可分擔家事"], correct: 0 },
+      { q: "家庭中誰應該照顧小孩？", options: ["只有媽媽", "父母雙方共同負責", "祖父母"], correct: 1 },
+      { q: "「性別平權」的核心是？", options: ["尊重與平等對待每個人", "強迫男女一樣", "男性優先"], correct: 0 },
+      { q: "SDGs第5項目標是什麼？", options: ["性別平權", "終結貧窮", "氣候行動"], correct: 0 },
+      { q: "下列何者是促進性別平權的行為？", options: ["聆聽不同性別的意見", "忽視他人想法", "嘲笑異性"], correct: 0 },
+      { q: "女生可以成為國家領導人嗎？", options: ["不可以", "可以", "只有在特定國家"], correct: 1 },
+      { q: "學校運動會應如何分組？", options: ["可依興趣與能力", "一定要男女分開", "女生不參加"], correct: 0 },
+      { q: "哪一項是性別平權的好例子？", options: ["公司聘用男女員工比例平衡", "只雇用男性", "讓女生負責泡茶"], correct: 0 }
+    ];
+
+    let answered = new Set();
+    let score = 0;
+
+    function askQuestion(index) {
+      if (answered.has(index)) {
+        alert("這間屋子的題目已經回答過囉！");
+        return;
+      }
+
+      const modal = document.getElementById("questionModal");
+      const questionText = document.getElementById("questionText");
+      const optionsDiv = document.getElementById("options");
+
+      const q = questions[index];
+      questionText.innerText = q.q;
+      optionsDiv.innerHTML = "";
+
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(index, i);
+        optionsDiv.appendChild(btn);
+      });
+
+      modal.style.display = "flex";
+    }
+
+    function checkAnswer(index, selected) {
+      const modal = document.getElementById("questionModal");
+      modal.style.display = "none";
+
+      const q = questions[index];
+      if (selected === q.correct) {
+        alert("答對了！");
+        score++;
+      } else {
+        alert("答錯了！");
+      }
+
+      answered.add(index);
+      document.getElementById("scoreBoard").innerText = `答對題數：${score} / 10`;
+
+      if (answered.size === 10) endGame();
+    }
+
+    function endGame() {
+      const endMsg = document.getElementById("endMessage");
+      const title = document.getElementById("endTitle");
+      const retryBtn = document.getElementById("retryBtn");
+      const nextBtn = document.getElementById("nextBtn");
+
+      endMsg.style.display = "block";
+      if (score >= 8) {
+        title.innerText = `太棒了！你答對了 ${score} 題，成功推進性別平權任務！`;
+        retryBtn.style.display = "none";
+        nextBtn.style.display = "inline-block";
+      } else {
+        title.innerText = `你答對了 ${score} 題，未達通關條件，請重新挑戰！`;
+        retryBtn.style.display = "inline-block";
+        nextBtn.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDGs 性別平權小達人 - 學習證書</title>
+<style>
+  body {
+    font-family: "Microsoft JhengHei", sans-serif;
+    background: #e3f2fd;
+    text-align: center;
+    padding: 40px;
+  }
+
+  h1 {
+    color: #1a237e;
+    margin-bottom: 10px;
+  }
+
+  #certificate {
+    margin: 30px auto;
+    width: 80%;
+    max-width: 700px;
+    background: linear-gradient(180deg, #fff, #f9f9f9);
+    border: 10px solid gold;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    padding: 40px;
+    position: relative;
+  }
+
+  #certificate h2 {
+    color: #e91e63;
+    margin-bottom: 20px;
+  }
+
+  #certificate p {
+    font-size: 18px;
+    color: #333;
+    margin: 10px 0;
+  }
+
+  #nameInput {
+    padding: 8px 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+  }
+
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 15px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #43a047;
+  }
+
+  /* 印出樣式：僅顯示證書內容 */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #certificate, #certificate * {
+      visibility: visible;
+    }
+    #certificate {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      box-shadow: none;
+      border: none;
+    }
+  }
+
+  .seal {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-size: 22px;
+    color: #c62828;
+    font-weight: bold;
+    border: 3px solid #c62828;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    line-height: 110px;
+    text-align: center;
+    transform: rotate(-10deg);
+    background: rgba(255,255,255,0.6);
+  }
+</style>
+</head>
+<body>
+
+  <h1>🎓 SDGs 性別平權小達人 - 學習證書 🎓</h1>
+
+  <p>請輸入您的姓名：</p>
+  <input type="text" id="nameInput" placeholder="例如：王小明">
+  <button onclick="generateCertificate()">生成證書</button>
+
+  <div id="certificate" style="display:none;">
+    <h2>學習證書</h2>
+    <p>兹證明</p>
+    <h2 id="userNameDisplay" style="color:#1565c0;"></h2>
+    <p>在本次「<strong>SDGs 性別平權</strong>」教育遊戲中，表現優異，榮獲</p>
+    <h2>🏅 SDGs 性別平權小達人 🏅</h2>
+    <p>特此頒發此證，以資鼓勵！</p>
+    <p style="margin-top: 40px;">指導單位：永續發展教育推廣中心</p>
+    <p>日期：<span id="date"></span></p>
+    <div class="seal">認證通過</div>
+    <button onclick="window.print()">下載證書</button>
+  </div>
+
+<script>
+function generateCertificate() {
+  const name = document.getElementById("nameInput").value.trim();
+  if (!name) {
+    alert("請先輸入姓名！");
+    return;
+  }
+  document.getElementById("userNameDisplay").innerText = name;
+  document.getElementById("certificate").style.display = "block";
+  const today = new Date();
+  const dateStr = `${today.getFullYear()} 年 ${today.getMonth()+1} 月 ${today.getDate()} 日`;
+  document.getElementById("date").innerText = dateStr;
+
+  // 自動捲動到證書區
+  document.getElementById("certificate").scrollIntoView({behavior: "smooth"});
+}
+</script>
+
+</body>
+</html>
